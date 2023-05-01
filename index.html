@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amebo Test Page</title>
+    <style>
+    #gameboy {
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -o-crisp-edges;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: optimize-contrast;
+      -ms-interpolation-mode: nearest-neighbor;
+    }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameboy" width="320" height="288"></canvas>
+    <br>
+    ROM File:
+    <input type="file" id="file"></input><br>
+    Load Battery:
+    <input type="file" id="file2"></input>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
