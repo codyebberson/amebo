@@ -1,6 +1,6 @@
 export function initGameboy(
-  file?: string | undefined,
-  canvas?: HTMLCanvasElement,
+  file: string,
+  canvas: HTMLCanvasElement,
   options?: any
 ): { loadROMBuffer: (arg0: any) => void; scopeEval: (arg0: string) => any } {
   if (options == null) {
@@ -13,15 +13,11 @@ export function initGameboy(
   }
   requestAnimationFrame(update);
 
-  var sadGB =
-    'data:image/gif;base64,R0lGODlhGQArAIAAAP///wAAACH5BAAHAP8ALAAAAAAZACsAAAKORI6pewYPo5yvGYZRDTf721Gi1mjiRHKmKrFhaTkolIYOF7m1eeawTaugfjwarkWM9Taq5pGpfDlzSGMTeMLtor2tJwNSUI5i2BcD6pwTmyG4ulxy43D6iPy0x+aj9iLuVdQSlFY4FrWXN1NnN9R493gY6Xg4JaSlKHdjqCfDl7X5CYqZqeck6IYKxUBRAAA7';
-  //image used for errors, takes up space but you've got to love it tho
-
   let RSToff = 0; //used by gbs player
   let paused = false;
 
   let mime = undefined;
-  let game = undefined;
+  let game: Uint8Array | undefined = undefined;
   let frameCycles = 0;
 
   function loadROM(url: string, pauseAfter = false) {
@@ -30,8 +26,7 @@ export function initGameboy(
     loadfile.responseType = 'arraybuffer';
     loadfile.send();
 
-    var filename = url.split('/');
-    filename = filename[filename.length - 1];
+    const filename = url.split('/').pop();
     paused = true;
 
     loadfile.onprogress = drawProgress;
@@ -47,23 +42,21 @@ export function initGameboy(
     };
   }
 
-  function loadROMBuffer(buffer, battery = undefined) {
+  function loadROMBuffer(buffer: ArrayBuffer | Uint8Array, battery = undefined) {
     //battery is an optional parameter
     if (buffer instanceof ArrayBuffer) game = new Uint8Array(buffer);
     else if (buffer instanceof Uint8Array) game = buffer;
     else alert(buffer);
     gameLoaded = true;
-    if (biosLoaded == 2) init();
+    init();
   }
 
   var internalCanvas = document.createElement('canvas');
   internalCanvas.width = 160;
   internalCanvas.height = 144;
-  var internalCtx = internalCanvas.getContext('2d');
+  var internalCtx = internalCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-  if (canvas == null) canvas = internalCanvas; //if we have no output, display to self.
-
-  var ctx = canvas.getContext('2d');
+  var ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   ctx.imageSmoothingEnabled = false;
 
   var colours = [
@@ -74,7 +67,6 @@ export function initGameboy(
   ];
 
   var gameLoaded = false;
-  var biosLoaded = 0;
   var GBAudioContext = new AudioContext();
 
   var getGamepads = navigator.getGamepads;
@@ -98,74 +90,71 @@ export function initGameboy(
   window.addEventListener('touchstart', dummySound, false);
   window.addEventListener('mousedown', dummySound, false);
 
-  function scopeEval(code) {
+  function scopeEval(code: string) {
     return eval(code);
   }
 
-  var registers,
-    flags,
-    SP,
-    PC,
-    Cycles,
-    IME,
-    bios,
-    CGBbios,
-    MemRead,
-    MemWrite,
-    VRAM,
-    RAM,
-    OAM,
-    IORAM,
-    ZRAM,
-    CRAM,
-    biosActive,
-    vblankComplete,
-    lineCycles,
-    GBScreen,
-    buttonByte,
-    masterClock,
-    frameskip,
-    timeStart,
-    sampleNumber,
-    MBC,
-    MBCReadHandler,
-    MBCWriteHandler,
-    AudioEngine,
-    AudioMerge,
-    soundLout,
-    soundRout,
-    audioSampleRate,
-    LCDstate,
-    halted,
-    palettes,
-    palettesInt32,
-    ROMID,
-    timerCounts,
-    WaveRAMCycles,
-    CGB,
-    CGBDMA,
-    CPUSpeed,
-    CGBBGPal,
-    CGBBGPalReg,
-    CGBSprPal,
-    CGBSprPalReg,
-    tileLayerData = new Uint8Array(160),
-    tileLayerPalette = new Uint8Array(160),
-    emptyTileLayer = new Uint8Array(160),
-    bufferSize,
-    audioSyncFrames,
-    soundCycles,
-    soundPhase,
-    timerCycles,
-    audioCycles,
-    cyclesForSample,
-    divCounts,
-    CGBInt32BG,
-    CGBInt32Spr;
+  let registers: Uint8Array | undefined = undefined;
+  let flags: number[] = [];
+  let SP = 0;
+  let PC = 0;
+  let Cycles = 0;
+  let IME = false;
+  // let CGBbios = undefined;
+  // let MemRead = undefined;
+  // let MemWrite = undefined;
+  let VRAM: Uint8Array | undefined = undefined;
+  let RAM: Uint8Array | undefined = undefined;
+  let OAM: Uint8Array | undefined = undefined;
+  let IORAM: Uint8Array | undefined = undefined;
+  let ZRAM: Uint8Array | undefined = undefined;
+  let CRAM: Uint8Array | undefined = undefined;
+  // let biosActive = undefined;
+  // let vblankComplete = undefined;
+  let lineCycles = 0;
+  let buttonByte = 0;
+  let masterClock = 0;
+  let frameskip = false;
+  let timeStart = undefined;
+  let sampleNumber = undefined;
+  let MBC = undefined;
+  let MBCReadHandler = undefined;
+  let MBCWriteHandler = undefined;
+  let AudioEngine = undefined;
+  let AudioMerge = undefined;
+  let soundLout = undefined;
+  let soundRout = undefined;
+  let audioSampleRate = 44100;
+  let LCDstate = 0;
+  let halted = false;
+  let palettes: Uint8Array | undefined = undefined;
+  let palettesInt32: Uint32Array | undefined = undefined;
+  let ROMID: string | undefined = undefined;
+  let timerCounts = undefined;
+  let WaveRAMCycles = 0;
+  let CGB = false;
+  let CGBDMA: Record<string, unknown> | undefined = undefined;
+  let CPUSpeed = 0;
+  let CGBBGPal: Uint8Array | undefined = undefined;
+  let CGBBGPalReg: Uint8Array | undefined = undefined;
+  let CGBSprPal: Uint8Array | undefined = undefined;
+  let CGBSprPalReg: Uint8Array | undefined = undefined;
+  let tileLayerData = new Uint8Array(160);
+  let tileLayerPalette = new Uint8Array(160);
+  let emptyTileLayer = new Uint8Array(160);
+  let bufferSize = 0;
+  let audioSyncFrames = 0;
+  let soundCycles = 0;
+  let soundPhase = 0;
+  let timerCycles = 0;
+  let audioCycles = 0;
+  let cyclesForSample = 0;
+  let divCounts = 0;
+  let CGBInt32BG: Uint32Array | undefined = undefined;
+  let CGBInt32Spr: Uint32Array | undefined = undefined;
+  let instCount = 0;
 
-  var registerDebug, instCount;
-
-  GBScreen = internalCtx.createImageData(160, 144);
+  let GBScreen = internalCtx.createImageData(160, 144);
   var EmptyImageBuffer = new Uint8Array(GBScreen.data.length);
   var GBScreenInt32 = new Uint32Array(GBScreen.data.buffer);
 
@@ -188,34 +177,6 @@ export function initGameboy(
     loadROM(file);
   }
 
-  var loadbios = new XMLHttpRequest();
-  loadbios.open('GET', options.rootDir + 'dmgbios.bin');
-  loadbios.responseType = 'arraybuffer';
-  loadbios.send();
-  loadbios.onload = function () {
-    if (loadbios.status == 200) bios = new Uint8Array(loadbios.response);
-    biosLoaded++;
-    if (gameLoaded && biosLoaded == 2) init();
-  };
-  loadbios.onerror = function () {
-    biosLoaded++;
-    if (gameLoaded && biosLoaded == 2) init();
-  };
-
-  var loadCGBbios = new XMLHttpRequest();
-  loadCGBbios.open('GET', options.rootDir + 'gbcbios.bin');
-  loadCGBbios.responseType = 'arraybuffer';
-  loadCGBbios.send();
-  loadCGBbios.onload = function () {
-    if (loadCGBbios.status == 200) CGBbios = new Uint8Array(loadCGBbios.response);
-    biosLoaded++;
-    if (gameLoaded && biosLoaded == 2) init();
-  };
-  loadCGBbios.onerror = function () {
-    biosLoaded++;
-    if (gameLoaded && biosLoaded == 2) init();
-  };
-
   var keysArray = new Array(256);
   for (var i = 0; i < 256; i++) {
     keysArray[i] = 1;
@@ -223,7 +184,7 @@ export function initGameboy(
   document.addEventListener('keydown', keyDownHandler, false);
   document.addEventListener('keyup', keyUpHandler, false);
 
-  function keyDownHandler(evt) {
+  function keyDownHandler(evt: KeyboardEvent): void {
     keysArray[evt.keyCode] = 0;
 
     var stateNum = controlKeyConfig.STATES.indexOf(evt.keyCode);
@@ -238,7 +199,7 @@ export function initGameboy(
     }
   }
 
-  function keyUpHandler(evt) {
+  function keyUpHandler(evt: KeyboardEvent): void {
     keysArray[evt.keyCode] = 1;
   }
 
@@ -251,7 +212,7 @@ export function initGameboy(
     return name;
   }
 
-  function generateUniqueName() {
+  function generateUniqueName(): string {
     var sum = 0;
     for (var i = 0; i < game.length; i++) {
       sum = (sum + game[i]) % 4294967295;
@@ -1686,8 +1647,8 @@ export function initGameboy(
 
   // ----- State Load/Save -----
 
-  function byteToString(byteArray, noBase64) {
-    if (typeof byteArray == 'undefined') return;
+  function byteToString(byteArray: Uint8Array, noBase64?: boolean): string {
+    // if (typeof byteArray == 'undefined') return;
     var string = '';
     for (var i = 0; i < byteArray.length; i++) {
       string += String.fromCharCode(byteArray[i]);
@@ -1695,9 +1656,9 @@ export function initGameboy(
     return noBase64 || false ? string : btoa(string); //i have to base64 encode because JSON.stringify encodes unusual characters like \u1234
   }
 
-  function stringToByte(string, noBase64) {
+  function stringToByte(string: string, noBase64?: boolean): Uint8Array {
     var string = noBase64 || false ? string : atob(string);
-    if (typeof string == 'undefined') return; //so incomplete states don't cause errors.
+    // if (typeof string == 'undefined') return; //so incomplete states don't cause errors.
     var byteArray = new Uint8Array(string.length);
     for (var i = 0; i < byteArray.length; i++) {
       byteArray[i] = string.charCodeAt(i);
@@ -1707,25 +1668,25 @@ export function initGameboy(
 
   function saveState() {
     return {
-      VRAM: byteToString(VRAM),
-      RAM: byteToString(RAM),
-      OAM: byteToString(OAM),
-      IORAM: byteToString(IORAM),
-      ZRAM: byteToString(ZRAM),
-      CRAM: byteToString(CRAM) || '',
+      VRAM: byteToString(VRAM as Uint8Array),
+      RAM: byteToString(RAM as Uint8Array),
+      OAM: byteToString(OAM as Uint8Array),
+      IORAM: byteToString(IORAM as Uint8Array),
+      ZRAM: byteToString(ZRAM as Uint8Array),
+      CRAM: byteToString(CRAM as Uint8Array) || '',
 
       CGBDMA: CGBDMA,
-      CGBBGPalReg: byteToString(CGBBGPalReg) || '',
-      CGBSprPalReg: byteToString(CGBSprPalReg) || '',
+      CGBBGPalReg: byteToString(CGBBGPalReg as Uint8Array) || '',
+      CGBSprPalReg: byteToString(CGBSprPalReg as Uint8Array) || '',
       CPUSpeed: CPUSpeed,
 
       MBC: MBC,
 
-      registers: byteToString(registers),
+      registers: byteToString(registers as Uint8Array),
       flags: flags,
       SP: SP,
       PC: PC,
-      biosActive: biosActive,
+      // biosActive: biosActive,
       IME: IME,
       LCDstate: LCDstate,
 
@@ -1744,7 +1705,7 @@ export function initGameboy(
     };
   }
 
-  function loadState(obj) {
+  function loadState(obj: Record<string, any>) {
     VRAM = stringToByte(obj.VRAM);
     RAM = stringToByte(obj.RAM);
     OAM = stringToByte(obj.OAM);
@@ -1767,7 +1728,7 @@ export function initGameboy(
     flags = obj.flags;
     SP = obj.SP;
     PC = obj.PC;
-    biosActive = obj.biosActive;
+    // biosActive = obj.biosActive;
     IME = obj.IME;
     LCDstate = obj.LCDstate;
 
@@ -2067,7 +2028,7 @@ export function initGameboy(
   //END CGB IO
 
   IOWriteFunctions[0x50] = function (a, b) {
-    biosActive = false;
+    // biosActive = false;
     IORAM[b] = a;
   };
 
@@ -3273,7 +3234,6 @@ export function initGameboy(
   // this.reset = reset;
 
   function reset(reloadBattery) {
-    registerDebug = [];
     instCount = 0;
 
     prepareAudioEngine(); //have to do this even with no audio api (see above)
@@ -3346,29 +3306,30 @@ export function initGameboy(
         srcPos: 0,
         destPos: 0,
       };
-      biosActive = CGBbios != null;
+      // biosActive = CGBbios != null;
     } else {
       CGBDMA = { active: false };
-      biosActive = bios != null;
-      if (!biosActive) {
-        IORAM[0x70] = 1;
-      }
+      // biosActive = false;
+      IORAM[0x70] = 1;
     }
 
     SP = 0;
-    if (biosActive) {
-      registers = new Uint8Array([0, 0, 0, 0, 0, 0, 0]); //A, B, C, D, E, H, L
-    } else {
-      SP = 0xfffe;
-      registers = new Uint8Array([CGB ? 17 : 1, 0, 0x13, 0, 0xd8, 0x01, 0x4d]); //A, B, C, D, E, H, L
-      IORAM[0x40] = 0x91;
-    }
+    // if (biosActive) {
+    //   registers = new Uint8Array([0, 0, 0, 0, 0, 0, 0]); //A, B, C, D, E, H, L
+    // } else {
+    SP = 0xfffe;
+    registers = new Uint8Array([CGB ? 17 : 1, 0, 0x13, 0, 0xd8, 0x01, 0x4d]); //A, B, C, D, E, H, L
+    IORAM[0x40] = 0x91;
+    // }
     flags = [0, 0, 0, 0, 1]; //Z, N, H, C, true (for non conditional jumps)
 
-    PC = biosActive ? 0 : 0x100;
-    IORAM[0x44] = biosActive ? 0 : CGB ? 144 : 153;
+    // PC = biosActive ? 0 : 0x100;
+    PC = 0x100;
+    // IORAM[0x44] = biosActive ? 0 : CGB ? 144 : 153;
+    IORAM[0x44] = CGB ? 144 : 153;
     Cycles = 0;
-    LCDstate = biosActive ? 1 : 2;
+    // LCDstate = biosActive ? 1 : 2;
+    LCDstate = 2;
     IME = false; //interrupt master enable
     halted = false;
     palettes = new Uint8Array(readDMGPalette(0).concat(readDMGPalette(1), readDMGPalette(2)));
@@ -3474,13 +3435,7 @@ export function initGameboy(
 
     internalCtx.fillStyle = '#FFFFFF';
     internalCtx.fillRect(0, 0, 160, 144);
-    var img = new Image();
-    img.src = sadGB;
-    img.onload = function () {
-      internalCtx.drawImage(img, 68, 51);
-      ctx.drawImage(internalCanvas, 0, 0, canvas.width, canvas.height);
-      alert("Something went horribly wrong! Here's the stack trace:\n" + err.stack);
-    };
+    alert("Something went horribly wrong! Here's the stack trace:\n" + err.stack);
   }
 
   function drawProgress(e) {
@@ -3682,19 +3637,6 @@ export function initGameboy(
     //}
 
     instCount++;
-    //if ((!biosActive) && (instCount%10 == 0)) appendRegistersDebug();
-  }
-
-  function appendRegistersDebug() {
-    registerDebug.push(registers[0]);
-    registerDebug.push(registers[1]);
-    registerDebug.push(registers[2]);
-    registerDebug.push(registers[3]);
-    registerDebug.push(registers[4]);
-    registerDebug.push(registers[5]);
-    registerDebug.push(registers[6]);
-    registerDebug.push(PC);
-    registerDebug.push(SP);
   }
 
   function CGBDMAStep(copy) {
@@ -3709,12 +3651,13 @@ export function initGameboy(
 
   function MemRead(pointer) {
     Cycles += 4;
-    if (pointer < 0x100 && biosActive) {
-      if (CGB) return CGBbios[pointer];
-      else return bios[pointer];
-    } else if (pointer < 0x8000) {
-      if (CGB && biosActive && pointer >= 0x200 && pointer < 0x900) return CGBbios[pointer];
-      else return MBCReadHandler(pointer) | 0; //can be undefined if stupid stuff happens
+    // if (pointer < 0x100 && biosActive) {
+    //   if (CGB) return CGBbios[pointer];
+    // } else
+    if (pointer < 0x8000) {
+      // if (CGB && biosActive && pointer >= 0x200 && pointer < 0x900) return CGBbios[pointer];
+      // else
+      return MBCReadHandler(pointer) | 0; //can be undefined if stupid stuff happens
     } else if (pointer < 0xa000) {
       if (CGB) return VRAM[pointer - 0x8000 + 0x2000 * IORAM[0x4f]];
       else return VRAM[pointer - 0x8000];
