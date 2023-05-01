@@ -1,12 +1,4 @@
-export function initGameboy(
-  file: string,
-  canvas: HTMLCanvasElement,
-  options?: any
-): { loadROMBuffer: (arg0: any) => void; scopeEval: (arg0: string) => any } {
-  if (options == null) {
-    options = { rootDir: '' };
-  }
-
+export function initGameboy(buffer: ArrayBuffer, canvas: HTMLCanvasElement): void {
   function update() {
     audioSyncUpdate();
     requestAnimationFrame(update);
@@ -16,47 +8,17 @@ export function initGameboy(
   let RSToff = 0; //used by gbs player
   let paused = false;
 
-  let mime = undefined;
-  let game: Uint8Array | undefined = undefined;
+  // let mime = undefined;
+  const game = new Uint8Array(buffer);
   let frameCycles = 0;
 
-  function loadROM(url: string, pauseAfter = false) {
-    var loadfile = new XMLHttpRequest();
-    loadfile.open('GET', url);
-    loadfile.responseType = 'arraybuffer';
-    loadfile.send();
-
-    const filename = url.split('/').pop();
-    paused = true;
-
-    loadfile.onprogress = drawProgress;
-    loadfile.onreadystatechange = function () {
-      mime = this.getResponseHeader('content-type');
-    };
-    loadfile.onload = function () {
-      paused = pauseAfter || false;
-      loadROMBuffer(loadfile.response);
-    };
-    loadfile.onerror = function () {
-      alert('Failed to load ' + url + '! Are CORS requests enabled on the server?');
-    };
-  }
-
-  function loadROMBuffer(buffer: ArrayBuffer | Uint8Array, battery = undefined) {
-    //battery is an optional parameter
-    if (buffer instanceof ArrayBuffer) game = new Uint8Array(buffer);
-    else if (buffer instanceof Uint8Array) game = buffer;
-    else alert(buffer);
-    gameLoaded = true;
-    init();
-  }
-
-  var internalCanvas = document.createElement('canvas');
+  const internalCanvas = document.createElement('canvas');
   internalCanvas.width = 160;
   internalCanvas.height = 144;
-  var internalCtx = internalCanvas.getContext('2d') as CanvasRenderingContext2D;
 
-  var ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  const internalCtx = internalCanvas.getContext('2d') as CanvasRenderingContext2D;
+
+  const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   ctx.imageSmoothingEnabled = false;
 
   var colours = [
@@ -66,8 +28,7 @@ export function initGameboy(
     [15, 86, 47, 255],
   ];
 
-  var gameLoaded = false;
-  var GBAudioContext = new AudioContext();
+  const GBAudioContext = new AudioContext();
 
   var getGamepads = navigator.getGamepads;
 
@@ -82,7 +43,6 @@ export function initGameboy(
     var buffer = GBAudioContext.createBuffer(1, 1, 22050);
     var source = GBAudioContext.createBufferSource();
     source.buffer = buffer;
-
     source.connect(GBAudioContext.destination);
     source.start(0);
   };
@@ -90,47 +50,37 @@ export function initGameboy(
   window.addEventListener('touchstart', dummySound, false);
   window.addEventListener('mousedown', dummySound, false);
 
-  function scopeEval(code: string) {
-    return eval(code);
-  }
-
-  let registers: Uint8Array | undefined = undefined;
+  // let registers: Uint8Array | undefined = undefined;
   let flags: number[] = [];
   let SP = 0;
   let PC = 0;
   let Cycles = 0;
   let IME = false;
-  // let CGBbios = undefined;
-  // let MemRead = undefined;
-  // let MemWrite = undefined;
-  let VRAM: Uint8Array | undefined = undefined;
-  let RAM: Uint8Array | undefined = undefined;
-  let OAM: Uint8Array | undefined = undefined;
-  let IORAM: Uint8Array | undefined = undefined;
-  let ZRAM: Uint8Array | undefined = undefined;
-  let CRAM: Uint8Array | undefined = undefined;
-  // let biosActive = undefined;
-  // let vblankComplete = undefined;
+  // let VRAM: Uint8Array | undefined = undefined;
+  // let RAM: Uint8Array | undefined = undefined;
+  // let OAM: Uint8Array | undefined = undefined;
+  // // let IORAM: Uint8Array | undefined = undefined;
+  // let ZRAM: Uint8Array | undefined = undefined;
+  // let CRAM: Uint8Array | undefined = undefined;
   let lineCycles = 0;
   let buttonByte = 0;
   let masterClock = 0;
   let frameskip = false;
-  let timeStart = undefined;
-  let sampleNumber = undefined;
+  // let sampleNumber = undefined;
   let MBC = undefined;
   let MBCReadHandler = undefined;
   let MBCWriteHandler = undefined;
   let AudioEngine = undefined;
-  let AudioMerge = undefined;
-  let soundLout = undefined;
-  let soundRout = undefined;
+  // let AudioMerge = undefined;
+  // let soundLout = undefined;
+  // let soundRout = undefined;
   let audioSampleRate = 44100;
   let LCDstate = 0;
   let halted = false;
   let palettes: Uint8Array | undefined = undefined;
   let palettesInt32: Uint32Array | undefined = undefined;
-  let ROMID: string | undefined = undefined;
-  let timerCounts = undefined;
+  // let ROMID: string | undefined = undefined;
+  // let timerCounts = undefined;
   let WaveRAMCycles = 0;
   let CGB = false;
   let CGBDMA: Record<string, unknown> | undefined = undefined;
@@ -152,11 +102,13 @@ export function initGameboy(
   let divCounts = 0;
   let CGBInt32BG: Uint32Array | undefined = undefined;
   let CGBInt32Spr: Uint32Array | undefined = undefined;
-  let instCount = 0;
+  // let instCount = 0;
 
   let GBScreen = internalCtx.createImageData(160, 144);
   var EmptyImageBuffer = new Uint8Array(GBScreen.data.length);
   var GBScreenInt32 = new Uint32Array(GBScreen.data.buffer);
+  var RAMsizes = [0, 0x800, 0x2000, 0x8000];
+  var RAMsizesMBC5 = [0, 0x2000, 0x8000, 0x20000];
 
   var keyConfig = {
     A: 88,
@@ -173,16 +125,108 @@ export function initGameboy(
     STATES: [112, 113, 114, 115, 116, 117, 118, 119, 120, 121],
   };
 
-  if (file != null) {
-    loadROM(file);
-  }
+  // if (file != null) {
+  //   loadROM(file);
+  // }
 
   var keysArray = new Array(256);
   for (var i = 0; i < 256; i++) {
     keysArray[i] = 1;
   }
+
   document.addEventListener('keydown', keyDownHandler, false);
   document.addEventListener('keyup', keyUpHandler, false);
+
+  // function init() {
+  // if (typeof onload == 'function') onload(GBObj);
+  // onload = null;
+  // ROMname = getROMName();
+
+  // if (GBMaster.gameboys.indexOf(GBObj) == -1) GBMaster.gameboys.push(GBObj);
+
+  // cycle = cycle; //expose certain functions
+  // frameCycles = 0;
+
+  let ROMID = generateUniqueName();
+
+  CGB = game[0x143] == 0x80 || game[0x143] == 0xc0;
+  buttonByte = 255;
+  // instCount = 0;
+
+  prepareAudioEngine(); //have to do this even with no audio api (see above)
+
+  tileLayerPalette.set(emptyTileLayer); //this needs to be init to all zeroes in DMG mode so CGB tile priority from the previously drawn CGB screen doesnt take effect.
+
+  let VRAM = new Uint8Array(CGB ? 0x4000 : 0x2000);
+  let RAM = new Uint8Array(CGB ? 0x8000 : 0x2000);
+  let OAM = new Uint8Array(0xa0);
+  let IORAM = new Uint8Array(0x80);
+  let ZRAM = new Uint8Array(0x80);
+  CPUSpeed = 1;
+
+  if (CGB) {
+    IORAM[0x70] = 1;
+    CGBBGPalReg = new Uint8Array(0x60);
+    CGBBGPal = new Uint8Array(128);
+    CGBSprPalReg = new Uint8Array(0x60);
+    CGBSprPal = new Uint8Array(128);
+    CGBInt32BG = new Uint32Array(CGBBGPal.buffer);
+    CGBInt32Spr = new Uint32Array(CGBSprPal.buffer);
+    var index = 0;
+    for (var i = 0; i < 32; i++) {
+      CGBBGPal.set([255, 255, 255, 255], i * 4);
+      CGBSprPal.set([255, 255, 255, 255], i * 4);
+      CGBSprPalReg[index] = 0xff;
+      CGBBGPalReg[index++] = 0xff;
+      CGBSprPalReg[index] = 0x7f;
+      CGBBGPalReg[index++] = 0x7f;
+    }
+    CGBDMA = {
+      active: false,
+      mode: 0,
+      Tlength: 0,
+      srcPos: 0,
+      destPos: 0,
+    };
+    // biosActive = CGBbios != null;
+  } else {
+    CGBDMA = { active: false };
+    // biosActive = false;
+    IORAM[0x70] = 1;
+  }
+
+  SP = 0xfffe;
+  let registers = new Uint8Array([CGB ? 17 : 1, 0, 0x13, 0, 0xd8, 0x01, 0x4d]); //A, B, C, D, E, H, L
+  IORAM[0x40] = 0x91;
+  // }
+  flags = [0, 0, 0, 0, 1]; //Z, N, H, C, true (for non conditional jumps)
+
+  // PC = biosActive ? 0 : 0x100;
+  PC = 0x100;
+  // IORAM[0x44] = biosActive ? 0 : CGB ? 144 : 153;
+  IORAM[0x44] = CGB ? 144 : 153;
+  Cycles = 0;
+  // LCDstate = biosActive ? 1 : 2;
+  LCDstate = 2;
+  IME = false; //interrupt master enable
+  halted = false;
+  palettes = new Uint8Array(readDMGPalette(0).concat(readDMGPalette(1), readDMGPalette(2)));
+  palettesInt32 = new Uint32Array(palettes.buffer);
+
+  //cyclesAtLastAudio = 0;
+  masterClock = 0;
+  lineCycles = 0;
+  soundCycles = 0;
+  soundPhase = 0;
+  timerCycles = 0;
+  audioCycles = 0;
+  cyclesForSample = 4194304 / audioSampleRate;
+  divCounts = 0;
+  //timerCounts = 0;
+
+  audioSyncFrames = 0;
+
+  prepareGBScreen();
 
   function keyDownHandler(evt: KeyboardEvent): void {
     keysArray[evt.keyCode] = 0;
@@ -203,14 +247,14 @@ export function initGameboy(
     keysArray[evt.keyCode] = 1;
   }
 
-  function getROMName() {
-    var name = '';
-    for (var i = 0x134; i <= 0x143; i++) {
-      if (game[i] == 0) break;
-      name += String.fromCharCode(game[i]);
-    }
-    return name;
-  }
+  // function getROMName() {
+  //   var name = '';
+  //   for (var i = 0x134; i <= 0x143; i++) {
+  //     if (game[i] == 0) break;
+  //     name += String.fromCharCode(game[i]);
+  //   }
+  //   return name;
+  // }
 
   function generateUniqueName(): string {
     var sum = 0;
@@ -876,7 +920,7 @@ export function initGameboy(
     palettes.set(readDMGPalette(2), 32);
   }
 
-  function restorePal(reg, dest) {
+  function restorePal(reg: Uint8Array, dest: Uint8Array): void {
     for (var i = 0; i < 32; i++) {
       var mult = 8.225806451612904;
       dest.set(
@@ -890,14 +934,6 @@ export function initGameboy(
       );
       //dest[i] = [Math.round((reg[i*2]&0x1F)*mult), Math.round(((reg[i*2]>>5)+((reg[i*2+1]&3)<<3))*mult), Math.round(((reg[i*2+1]&0x7C)>>2)*mult)]
     }
-  }
-
-  function testSaveState() {
-    savewhatever = JSON.stringify(saveState());
-  }
-
-  function testLoadState() {
-    loadState(JSON.parse(savewhatever));
   }
 
   function objectifyAudioEngine() {
@@ -919,7 +955,7 @@ export function initGameboy(
         lengthCtr: AudioEngine[i].lengthCtr,
         volreg: AudioEngine[i].volreg,
 
-        sampleNumber: AudioEngine[i].sampleNumber,
+        // sampleNumber: AudioEngine[i].sampleNumber,
       };
     }
     obj[3].LFSR = AudioEngine[3].LFSR;
@@ -947,7 +983,7 @@ export function initGameboy(
       AudioEngine[i].lengthCtr = obj[i].lengthCtr;
       AudioEngine[i].volreg = obj[i].volreg;
 
-      AudioEngine[i].sampleNumber = obj[i].sampleNumber;
+      // AudioEngine[i].sampleNumber = obj[i].sampleNumber;
     }
     AudioEngine[3].LFSR = obj[3].LFSR;
     AudioEngine[3].frequency = obj[3].frequency;
@@ -960,6 +996,11 @@ export function initGameboy(
   // ----- I/O EMULATION -----
   var IOReadFunctions = [];
   var IOWriteFunctions = [];
+
+  for (var i = 0; i < 0x80; i++) {
+    if (IOReadFunctions[i] == null) IOReadFunctions[i] = IOReadDefault;
+    if (IOWriteFunctions[i] == null) IOWriteFunctions[i] = IOWriteDefault;
+  }
 
   IOWriteFunctions[0x04] = function (a, b) {
     IORAM[b] = 0;
@@ -1498,13 +1539,13 @@ export function initGameboy(
     IOWriteFunctions[i] = WaveRAMWrite;
   }
 
-  var IOWriteDefault = function (a, b) {
+  function IOWriteDefault(a, b) {
     IORAM[b] = a;
-  };
+  }
 
-  var IOReadDefault = function (b) {
+  function IOReadDefault(b) {
     return IORAM[b];
-  };
+  }
 
   function DMATransfer(a) {
     var mempos = a << 8;
@@ -1617,7 +1658,7 @@ export function initGameboy(
 
     if (initRequired) {
       AudioEngine = [];
-      sampleNumber = 0;
+      // sampleNumber = 0;
       audioSampleRate = GBAudioContext.sampleRate; //not accurate but works for now
       bufferSize = 1024;
       while (bufferSize / audioSampleRate < 0.016) {
@@ -1657,7 +1698,7 @@ export function initGameboy(
       AudioEngine[i].duty = 0.5;
       AudioEngine[i].phase = 0;
       AudioEngine[i].volume = 0;
-      AudioEngine[i].sampleNumber = 0;
+      // AudioEngine[i].sampleNumber = 0;
       AudioEngine[i].lengthCtr = 0;
     }
 
@@ -2310,6 +2351,42 @@ export function initGameboy(
     }
   };
 
+  var mbcid = MBCTable[game[0x147]] != null ? game[0x147] : 0;
+  MBC = JSON.parse(JSON.stringify(MBCTable[mbcid]));
+  // GBObj.MBC = MBC; //make MBC public
+
+  let CRAM: Uint8Array | undefined = undefined;
+  if (MBC.hardware.indexOf('RAM') > -1) {
+    MBC.RAMenable = false;
+    MBC.RAMbank = 0;
+    if (MBC.hardware.indexOf('BATTERY') > -1) loadBattery();
+    else {
+      if (MBC.type == 5) CRAM = new Uint8Array(RAMsizesMBC5[Math.min(3, game[0x149])]);
+      else CRAM = new Uint8Array(RAMsizes[Math.min(3, game[0x149])]);
+    }
+    if (MBC.hardware.indexOf('TIMER') > -1) {
+      MBC.RTC = {
+        latch: false,
+        seconds: 0,
+        minutes: 0,
+        hours: 0,
+        lowDays: 0,
+        hiDays: 0,
+        active: false,
+        dayCarry: false,
+        setCycle: 0, // used for cycle accurate times
+        setTime: 0, // used for resume from battery
+      };
+    }
+  }
+
+  if (MBC.type > 0) {
+    MBC.ROMbank = 1;
+  }
+
+  MBCReadHandler = MBCReadHandlers[MBC.type];
+  MBCWriteHandler = MBCWriteHandlers[MBC.type];
+
   function loadBattery() {
     var battery = localStorage['battery/' + ROMID];
     if (MBC.type == 5) CRAM = new Uint8Array(RAMsizesMBC5[Math.min(3, game[0x149])]);
@@ -2332,156 +2409,6 @@ export function initGameboy(
   }
 
   // ----- CPU EMULATION -----
-
-  function init() {
-    if (typeof onload == 'function') onload(GBObj);
-    onload = null;
-    // ROMname = getROMName();
-
-    // if (GBMaster.gameboys.indexOf(GBObj) == -1) GBMaster.gameboys.push(GBObj);
-
-    cycle = cycle; //expose certain functions
-    frameCycles = 0;
-
-    for (var i = 0; i < 0x80; i++) {
-      if (IOReadFunctions[i] == null) IOReadFunctions[i] = IOReadDefault;
-      if (IOWriteFunctions[i] == null) IOWriteFunctions[i] = IOWriteDefault;
-    }
-    ROMID = generateUniqueName();
-
-    CGB = game[0x143] == 0x80 || game[0x143] == 0xc0;
-    buttonByte = 255;
-
-    reset(true);
-  }
-
-  var RAMsizes = [0, 0x800, 0x2000, 0x8000];
-  var RAMsizesMBC5 = [0, 0x2000, 0x8000, 0x20000];
-  // this.reset = reset;
-
-  function reset(reloadBattery) {
-    instCount = 0;
-
-    prepareAudioEngine(); //have to do this even with no audio api (see above)
-
-    tileLayerPalette.set(emptyTileLayer); //this needs to be init to all zeroes in DMG mode so CGB tile priority from the previously drawn CGB screen doesnt take effect.
-
-    var mbcid = MBCTable[game[0x147]] != null ? game[0x147] : 0;
-    MBC = JSON.parse(JSON.stringify(MBCTable[mbcid]));
-    // GBObj.MBC = MBC; //make MBC public
-
-    if (MBC.hardware.indexOf('RAM') > -1) {
-      MBC.RAMenable = false;
-      MBC.RAMbank = 0;
-      if (reloadBattery) {
-        if (MBC.hardware.indexOf('BATTERY') > -1) loadBattery();
-        else {
-          if (MBC.type == 5) CRAM = new Uint8Array(RAMsizesMBC5[Math.min(3, game[0x149])]);
-          else CRAM = new Uint8Array(RAMsizes[Math.min(3, game[0x149])]);
-        }
-      }
-      if (MBC.hardware.indexOf('TIMER') > -1) {
-        MBC.RTC = {
-          latch: false,
-          seconds: 0,
-          minutes: 0,
-          hours: 0,
-          lowDays: 0,
-          hiDays: 0,
-          active: false,
-          dayCarry: false,
-          setCycle: 0, // used for cycle accurate times
-          setTime: 0, // used for resume from battery
-        };
-      }
-    }
-    if (MBC.type > 0) {
-      MBC.ROMbank = 1;
-    }
-    MBCReadHandler = MBCReadHandlers[MBC.type];
-    MBCWriteHandler = MBCWriteHandlers[MBC.type];
-
-    VRAM = new Uint8Array(CGB ? 0x4000 : 0x2000);
-    RAM = new Uint8Array(CGB ? 0x8000 : 0x2000);
-    OAM = new Uint8Array(0xa0);
-    IORAM = new Uint8Array(0x80);
-    ZRAM = new Uint8Array(0x80);
-    CPUSpeed = 1;
-
-    if (CGB) {
-      IORAM[0x70] = 1;
-      CGBBGPalReg = new Uint8Array(0x60);
-      CGBBGPal = new Uint8Array(128);
-      CGBSprPalReg = new Uint8Array(0x60);
-      CGBSprPal = new Uint8Array(128);
-      CGBInt32BG = new Uint32Array(CGBBGPal.buffer);
-      CGBInt32Spr = new Uint32Array(CGBSprPal.buffer);
-      var index = 0;
-      for (var i = 0; i < 32; i++) {
-        CGBBGPal.set([255, 255, 255, 255], i * 4);
-        CGBSprPal.set([255, 255, 255, 255], i * 4);
-        CGBSprPalReg[index] = 0xff;
-        CGBBGPalReg[index++] = 0xff;
-        CGBSprPalReg[index] = 0x7f;
-        CGBBGPalReg[index++] = 0x7f;
-      }
-      CGBDMA = {
-        active: false,
-        mode: 0,
-        Tlength: 0,
-        srcPos: 0,
-        destPos: 0,
-      };
-      // biosActive = CGBbios != null;
-    } else {
-      CGBDMA = { active: false };
-      // biosActive = false;
-      IORAM[0x70] = 1;
-    }
-
-    SP = 0;
-    // if (biosActive) {
-    //   registers = new Uint8Array([0, 0, 0, 0, 0, 0, 0]); //A, B, C, D, E, H, L
-    // } else {
-    SP = 0xfffe;
-    registers = new Uint8Array([CGB ? 17 : 1, 0, 0x13, 0, 0xd8, 0x01, 0x4d]); //A, B, C, D, E, H, L
-    IORAM[0x40] = 0x91;
-    // }
-    flags = [0, 0, 0, 0, 1]; //Z, N, H, C, true (for non conditional jumps)
-
-    // PC = biosActive ? 0 : 0x100;
-    PC = 0x100;
-    // IORAM[0x44] = biosActive ? 0 : CGB ? 144 : 153;
-    IORAM[0x44] = CGB ? 144 : 153;
-    Cycles = 0;
-    // LCDstate = biosActive ? 1 : 2;
-    LCDstate = 2;
-    IME = false; //interrupt master enable
-    halted = false;
-    palettes = new Uint8Array(readDMGPalette(0).concat(readDMGPalette(1), readDMGPalette(2)));
-    palettesInt32 = new Uint32Array(palettes.buffer);
-
-    //cyclesAtLastAudio = 0;
-    masterClock = 0;
-    lineCycles = 0;
-    soundCycles = 0;
-    soundPhase = 0;
-    timerCycles = 0;
-    audioCycles = 0;
-    cyclesForSample = 4194304 / audioSampleRate;
-    divCounts = 0;
-    //timerCounts = 0;
-
-    audioSyncFrames = 0;
-
-    timeStart = Date.now();
-    prepareGBScreen();
-    if (typeof onstart == 'function') {
-      onstart();
-      onstart = null;
-    }
-    //timeBetweenFrames = Date.now();
-  }
 
   function setButtonByte(b) {
     buttonByte = b;
@@ -2528,8 +2455,10 @@ export function initGameboy(
     //document.getElementById("debug").innerHTML = Instructions[MemRead(535)]+"<br><br>"+PrefixCBI[MemRead(536)];
     //Cycles -= 8BI;
     try {
-      if (paused) return; //don't run!
-      if (!options.cButByte) prepareButtonByte();
+      if (paused) {
+        return; //don't run!
+      }
+      prepareButtonByte();
       // if (NoAudioAPI) audioSyncFrames++;
       frameskip = false;
       var firstFrame = audioSyncFrames >= 1;
@@ -2561,7 +2490,8 @@ export function initGameboy(
 
     internalCtx.fillStyle = '#FFFFFF';
     internalCtx.fillRect(0, 0, 160, 144);
-    alert("Something went horribly wrong! Here's the stack trace:\n" + err.stack);
+    // alert("Something went horribly wrong! Here's the stack trace:\n" + err.stack);
+    console.error(err);
   }
 
   function drawProgress(e) {
@@ -2596,19 +2526,19 @@ export function initGameboy(
     }
   }
 
-  function printDebug() {
-    var text = '';
-    text += 'A: ' + registers[0] + '<br>';
-    text += 'B: ' + registers[1] + '<br>';
-    text += 'C: ' + registers[2] + '<br>';
-    text += 'D: ' + registers[3] + '<br>';
-    text += 'E: ' + registers[4] + '<br>';
-    text += 'H: ' + registers[5] + '<br>';
-    text += 'L: ' + registers[6] + '<br>';
-    text += 'PC: ' + PC + '<br>';
-    text += 'SP: ' + SP + '<br>';
-    document.getElementById('debug').innerHTML = text;
-  }
+  // function printDebug() {
+  //   var text = '';
+  //   text += 'A: ' + registers[0] + '<br>';
+  //   text += 'B: ' + registers[1] + '<br>';
+  //   text += 'C: ' + registers[2] + '<br>';
+  //   text += 'D: ' + registers[3] + '<br>';
+  //   text += 'E: ' + registers[4] + '<br>';
+  //   text += 'H: ' + registers[5] + '<br>';
+  //   text += 'L: ' + registers[6] + '<br>';
+  //   text += 'PC: ' + PC + '<br>';
+  //   text += 'SP: ' + SP + '<br>';
+  //   document.getElementById('debug').innerHTML = text;
+  // }
 
   var timerMods = [63, 0, 3, 15];
 
@@ -2761,8 +2691,7 @@ export function initGameboy(
     } else Instructions[MemRead(PC++)]();
     PC &= 0xffff;
     //}
-
-    instCount++;
+    // instCount++;
   }
 
   function CGBDMAStep(copy) {
@@ -3903,9 +3832,4 @@ export function initGameboy(
   }
 
   // ----- END INSTRUCTIONS -----
-
-  return {
-    loadROMBuffer,
-    scopeEval,
-  };
 }
