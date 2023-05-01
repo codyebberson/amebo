@@ -228,148 +228,72 @@ export function initGameboy(
     //cue ridiculously large table
     [
       NOP,
-      function () {
-        LD16M(1);
-      },
-      function () {
-        LDMA(1);
-      },
-      function () {
-        INC16(1);
-      },
-      function () {
-        INC(1);
-      },
-      function () {
-        DEC(1);
-      },
-      function () {
-        LDM(1);
-      },
+      () => LD16M(1),
+      () => LDMA(1),
+      () => INC16(1),
+      () => INC(1),
+      () => DEC(1),
+      () => LDM(1),
       function () {
         RLC(0);
         flags[0] = 0;
       },
       LDSP,
-      function () {
-        ADDHL16(1);
-      },
-      function () {
-        LDAM(1);
-      },
-      function () {
-        DEC16(1);
-      },
-      function () {
-        INC(2);
-      },
-      function () {
-        DEC(2);
-      },
-      function () {
-        LDM(2);
-      },
+      () => ADDHL16(1),
+      () => LDAM(1),
+      () => DEC16(1),
+      () => INC(2),
+      () => DEC(2),
+      () => LDM(2),
       function () {
         RRC(0);
         flags[0] = 0;
       },
       STOP,
-      function () {
-        LD16M(3);
-      },
-      function () {
-        LDMA(3);
-      },
-      function () {
-        INC16(3);
-      },
-      function () {
-        INC(3);
-      },
-      function () {
-        DEC(3);
-      },
-      function () {
-        LDM(3);
-      },
+      () => LD16M(3),
+      () => LDMA(3),
+      () => INC16(3),
+      () => INC(3),
+      () => DEC(3),
+      () => LDM(3),
       function () {
         RL(0);
         flags[0] = 0;
       },
-      function () {
-        JR(4, 1);
-      },
-      function () {
-        ADDHL16(3);
-      },
-      function () {
-        LDAM(3);
-      },
-      function () {
-        DEC16(3);
-      },
-      function () {
-        INC(4);
-      },
-      function () {
-        DEC(4);
-      },
-      function () {
-        LDM(4);
-      },
+      () => JR(4, 1),
+      () => ADDHL16(3),
+      () => LDAM(3),
+      () => DEC16(3),
+      () => INC(4),
+      () => DEC(4),
+      () => LDM(4),
       function () {
         RR(0);
         flags[0] = 0;
       },
-      function () {
-        JR(0, 0);
-      },
-      function () {
-        LD16M(5);
-      },
+      () => JR(0, 0),
+      () => LD16M(5),
       function () {
         LDMA(5);
         CHL(1);
       },
-      function () {
-        INC16(5);
-      },
-      function () {
-        INC(5);
-      },
-      function () {
-        DEC(5);
-      },
-      function () {
-        LDM(5);
-      },
+      () => INC16(5),
+      () => INC(5),
+      () => DEC(5),
+      () => LDM(5),
       DAA,
-      function () {
-        JR(0, 1);
-      },
-      function () {
-        ADDHL16(5);
-      },
+      () => JR(0, 1),
+      () => ADDHL16(5),
       function () {
         LDAM(5);
         CHL(1);
       },
-      function () {
-        DEC16(5);
-      },
-      function () {
-        INC(6);
-      },
-      function () {
-        DEC(6);
-      },
-      function () {
-        LDM(6);
-      },
+      () => DEC16(5),
+      () => INC(6),
+      () => DEC(6),
+      () => LDM(6),
       CPL,
-      function () {
-        JR(3, 0);
-      },
+      () => JR(3, 0),
       LDSPM,
       function () {
         LDMA(5);
@@ -380,484 +304,188 @@ export function initGameboy(
       DECHL,
       LDHLM,
       SCF,
-      function () {
-        JR(3, 1);
-      },
+      () => JR(3, 1),
       ADDHLSP,
       function () {
         LDAM(5);
         CHL(-1);
       },
       DECSP,
-      function () {
-        INC(0);
-      },
-      function () {
-        DEC(0);
-      },
-      function () {
-        LDM(0);
-      },
+      () => INC(0),
+      () => DEC(0),
+      () => LDM(0),
       CCF,
-      function () {
-        LD(1, 1);
-      },
-      function () {
-        LD(1, 2);
-      },
-      function () {
-        LD(1, 3);
-      },
-      function () {
-        LD(1, 4);
-      },
-      function () {
-        LD(1, 5);
-      },
-      function () {
-        LD(1, 6);
-      },
-      function () {
-        LDFHL(1);
-      },
-      function () {
-        LD(1, 0);
-      },
-      function () {
-        LD(2, 1);
-      },
-      function () {
-        LD(2, 2);
-      },
-      function () {
-        LD(2, 3);
-      },
-      function () {
-        LD(2, 4);
-      },
-      function () {
-        LD(2, 5);
-      },
-      function () {
-        LD(2, 6);
-      },
-      function () {
-        LDFHL(2);
-      },
-      function () {
-        LD(2, 0);
-      },
-      function () {
-        LD(3, 1);
-      },
-      function () {
-        LD(3, 2);
-      },
-      function () {
-        LD(3, 3);
-      },
-      function () {
-        LD(3, 4);
-      },
-      function () {
-        LD(3, 5);
-      },
-      function () {
-        LD(3, 6);
-      },
-      function () {
-        LDFHL(3);
-      },
-      function () {
-        LD(3, 0);
-      },
-      function () {
-        LD(4, 1);
-      },
-      function () {
-        LD(4, 2);
-      },
-      function () {
-        LD(4, 3);
-      },
-      function () {
-        LD(4, 4);
-      },
-      function () {
-        LD(4, 5);
-      },
-      function () {
-        LD(4, 6);
-      },
-      function () {
-        LDFHL(4);
-      },
-      function () {
-        LD(4, 0);
-      },
-      function () {
-        LD(5, 1);
-      },
-      function () {
-        LD(5, 2);
-      },
-      function () {
-        LD(5, 3);
-      },
-      function () {
-        LD(5, 4);
-      },
-      function () {
-        LD(5, 5);
-      },
-      function () {
-        LD(5, 6);
-      },
-      function () {
-        LDFHL(5);
-      },
-      function () {
-        LD(5, 0);
-      },
-      function () {
-        LD(6, 1);
-      },
-      function () {
-        LD(6, 2);
-      },
-      function () {
-        LD(6, 3);
-      },
-      function () {
-        LD(6, 4);
-      },
-      function () {
-        LD(6, 5);
-      },
-      function () {
-        LD(6, 6);
-      },
-      function () {
-        LDFHL(6);
-      },
-      function () {
-        LD(6, 0);
-      },
-      function () {
-        LDTHL(1);
-      },
-      function () {
-        LDTHL(2);
-      },
-      function () {
-        LDTHL(3);
-      },
-      function () {
-        LDTHL(4);
-      },
-      function () {
-        LDTHL(5);
-      },
-      function () {
-        LDTHL(6);
-      },
+      () => LD(1, 1),
+      () => LD(1, 2),
+      () => LD(1, 3),
+      () => LD(1, 4),
+      () => LD(1, 5),
+      () => LD(1, 6),
+      () => LDFHL(1),
+      () => LD(1, 0),
+      () => LD(2, 1),
+      () => LD(2, 2),
+      () => LD(2, 3),
+      () => LD(2, 4),
+      () => LD(2, 5),
+      () => LD(2, 6),
+      () => LDFHL(2),
+      () => LD(2, 0),
+      () => LD(3, 1),
+      () => LD(3, 2),
+      () => LD(3, 3),
+      () => LD(3, 4),
+      () => LD(3, 5),
+      () => LD(3, 6),
+      () => LDFHL(3),
+      () => LD(3, 0),
+      () => LD(4, 1),
+      () => LD(4, 2),
+      () => LD(4, 3),
+      () => LD(4, 4),
+      () => LD(4, 5),
+      () => LD(4, 6),
+      () => LDFHL(4),
+      () => LD(4, 0),
+      () => LD(5, 1),
+      () => LD(5, 2),
+      () => LD(5, 3),
+      () => LD(5, 4),
+      () => LD(5, 5),
+      () => LD(5, 6),
+      () => LDFHL(5),
+      () => LD(5, 0),
+      () => LD(6, 1),
+      () => LD(6, 2),
+      () => LD(6, 3),
+      () => LD(6, 4),
+      () => LD(6, 5),
+      () => LD(6, 6),
+      () => LDFHL(6),
+      () => LD(6, 0),
+      () => LDTHL(1),
+      () => LDTHL(2),
+      () => LDTHL(3),
+      () => LDTHL(4),
+      () => LDTHL(5),
+      () => LDTHL(6),
       HALT,
-      function () {
-        LDTHL(0);
-      },
-      function () {
-        LD(0, 1);
-      },
-      function () {
-        LD(0, 2);
-      },
-      function () {
-        LD(0, 3);
-      },
-      function () {
-        LD(0, 4);
-      },
-      function () {
-        LD(0, 5);
-      },
-      function () {
-        LD(0, 6);
-      },
-      function () {
-        LDFHL(0);
-      },
-      function () {
-        LD(0, 0);
-      },
-      function () {
-        ADD(1);
-      },
-      function () {
-        ADD(2);
-      },
-      function () {
-        ADD(3);
-      },
-      function () {
-        ADD(4);
-      },
-      function () {
-        ADD(5);
-      },
-      function () {
-        ADD(6);
-      },
+      () => LDTHL(0),
+      () => LD(0, 1),
+      () => LD(0, 2),
+      () => LD(0, 3),
+      () => LD(0, 4),
+      () => LD(0, 5),
+      () => LD(0, 6),
+      () => LDFHL(0),
+      () => LD(0, 0),
+      () => ADD(1),
+      () => ADD(2),
+      () => ADD(3),
+      () => ADD(4),
+      () => ADD(5),
+      () => ADD(6),
       ADDHL,
-      function () {
-        ADD(0);
-      },
-      function () {
-        ADC(1);
-      },
-      function () {
-        ADC(2);
-      },
-      function () {
-        ADC(3);
-      },
-      function () {
-        ADC(4);
-      },
-      function () {
-        ADC(5);
-      },
-      function () {
-        ADC(6);
-      },
+      () => ADD(0),
+      () => ADC(1),
+      () => ADC(2),
+      () => ADC(3),
+      () => ADC(4),
+      () => ADC(5),
+      () => ADC(6),
       ADCHL,
-      function () {
-        ADC(0);
-      },
-      function () {
-        SUB(1);
-      },
-      function () {
-        SUB(2);
-      },
-      function () {
-        SUB(3);
-      },
-      function () {
-        SUB(4);
-      },
-      function () {
-        SUB(5);
-      },
-      function () {
-        SUB(6);
-      },
+      () => ADC(0),
+      () => SUB(1),
+      () => SUB(2),
+      () => SUB(3),
+      () => SUB(4),
+      () => SUB(5),
+      () => SUB(6),
       SUBHL,
-      function () {
-        SUB(0);
-      },
-      function () {
-        SBC(1);
-      },
-      function () {
-        SBC(2);
-      },
-      function () {
-        SBC(3);
-      },
-      function () {
-        SBC(4);
-      },
-      function () {
-        SBC(5);
-      },
-      function () {
-        SBC(6);
-      },
+      () => SUB(0),
+      () => SBC(1),
+      () => SBC(2),
+      () => SBC(3),
+      () => SBC(4),
+      () => SBC(5),
+      () => SBC(6),
       SBCHL,
-      function () {
-        SBC(0);
-      },
-      function () {
-        AND(1);
-      },
-      function () {
-        AND(2);
-      },
-      function () {
-        AND(3);
-      },
-      function () {
-        AND(4);
-      },
-      function () {
-        AND(5);
-      },
-      function () {
-        AND(6);
-      },
+      () => SBC(0),
+      () => AND(1),
+      () => AND(2),
+      () => AND(3),
+      () => AND(4),
+      () => AND(5),
+      () => AND(6),
       ANDHL,
-      function () {
-        AND(0);
-      },
-      function () {
-        XOR(1);
-      },
-      function () {
-        XOR(2);
-      },
-      function () {
-        XOR(3);
-      },
-      function () {
-        XOR(4);
-      },
-      function () {
-        XOR(5);
-      },
-      function () {
-        XOR(6);
-      },
+      () => AND(0),
+      () => XOR(1),
+      () => XOR(2),
+      () => XOR(3),
+      () => XOR(4),
+      () => XOR(5),
+      () => XOR(6),
       XORHL,
-      function () {
-        XOR(0);
-      },
-      function () {
-        OR(1);
-      },
-      function () {
-        OR(2);
-      },
-      function () {
-        OR(3);
-      },
-      function () {
-        OR(4);
-      },
-      function () {
-        OR(5);
-      },
-      function () {
-        OR(6);
-      },
+      () => XOR(0),
+      () => OR(1),
+      () => OR(2),
+      () => OR(3),
+      () => OR(4),
+      () => OR(5),
+      () => OR(6),
       ORHL,
-      function () {
-        OR(0);
-      },
-      function () {
-        CP(1);
-      },
-      function () {
-        CP(2);
-      },
-      function () {
-        CP(3);
-      },
-      function () {
-        CP(4);
-      },
-      function () {
-        CP(5);
-      },
-      function () {
-        CP(6);
-      },
+      () => OR(0),
+      () => CP(1),
+      () => CP(2),
+      () => CP(3),
+      () => CP(4),
+      () => CP(5),
+      () => CP(6),
       CPHL,
-      function () {
-        CP(0);
-      },
-      function () {
-        RET(0, 0);
-      },
-      function () {
-        POP(1);
-      },
-      function () {
-        JP(0, 0);
-      },
-      function () {
-        JP(4, 1);
-      },
-      function () {
-        CALL(0, 0);
-      },
-      function () {
-        PUSH(1);
-      },
+      () => CP(0),
+      () => RET(0, 0),
+      () => POP(1),
+      () => JP(0, 0),
+      () => JP(4, 1),
+      () => CALL(0, 0),
+      () => PUSH(1),
       ADDM,
-      function () {
-        RST(0);
-      },
-      function () {
-        RET(0, 1);
-      },
+      () => RST(0),
+      () => RET(0, 1),
       NRET,
-      function () {
-        JP(0, 1);
-      },
+      () => JP(0, 1),
       PrefixCB,
-      function () {
-        CALL(0, 1);
-      },
-      function () {
-        CALL(4, 1);
-      },
+      () => CALL(0, 1),
+      () => CALL(4, 1),
       ADCM,
-      function () {
-        RST(8);
-      },
-      function () {
-        RET(3, 0);
-      },
-      function () {
-        POP(3);
-      },
-      function () {
-        JP(3, 0);
-      },
+      () => RST(8),
+      () => RET(3, 0),
+      () => POP(3),
+      () => JP(3, 0),
       UNIMP,
-      function () {
-        CALL(3, 0);
-      },
-      function () {
-        PUSH(3);
-      },
+      () => CALL(3, 0),
+      () => PUSH(3),
       SUBM,
-      function () {
-        RST(16);
-      },
-      function () {
-        RET(3, 1);
-      },
+      () => RST(16),
+      () => RET(3, 1),
       function () {
         EI();
         NRET();
       },
-      function () {
-        JP(3, 1);
-      },
+      () => JP(3, 1),
       UNIMP,
-      function () {
-        CALL(3, 1);
-      },
+      () => CALL(3, 1),
       UNIMP,
       SBCM,
-      function () {
-        RST(24);
-      },
+      () => RST(24),
       LDH_M_A,
-      function () {
-        POP(5);
-      },
+      () => POP(5),
       LDH_C_A,
       UNIMP,
       UNIMP,
-      function () {
-        PUSH(5);
-      },
+      () => PUSH(5),
       ANDM,
-      function () {
-        RST(32);
-      },
+      () => RST(32),
       ADDSP,
       JPHL,
       LD_M_A,
@@ -865,9 +493,7 @@ export function initGameboy(
       UNIMP,
       UNIMP,
       XORM,
-      function () {
-        RST(40);
-      },
+      () => RST(40),
       LDH_A_M,
       POPAF,
       LDH_A_C,
@@ -875,9 +501,7 @@ export function initGameboy(
       UNIMP,
       PUSHAF,
       ORM,
-      function () {
-        RST(48);
-      },
+      () => RST(48),
       LD_HL_SPM,
       LDSPHL,
       LD_A_M,
@@ -885,764 +509,266 @@ export function initGameboy(
       UNIMP,
       UNIMP,
       CPM,
-      function () {
-        RST(56);
-      },
+      () => RST(56),
     ];
 
   var PrefixCBI = [
-    function () {
-      RLC(1);
-    },
-    function () {
-      RLC(2);
-    },
-    function () {
-      RLC(3);
-    },
-    function () {
-      RLC(4);
-    },
-    function () {
-      RLC(5);
-    },
-    function () {
-      RLC(6);
-    },
+    () => RLC(1),
+    () => RLC(2),
+    () => RLC(3),
+    () => RLC(4),
+    () => RLC(5),
+    () => RLC(6),
     RLCHL,
-    function () {
-      RLC(0);
-    },
-    function () {
-      RRC(1);
-    },
-    function () {
-      RRC(2);
-    },
-    function () {
-      RRC(3);
-    },
-    function () {
-      RRC(4);
-    },
-    function () {
-      RRC(5);
-    },
-    function () {
-      RRC(6);
-    },
+    () => RLC(0),
+    () => RRC(1),
+    () => RRC(2),
+    () => RRC(3),
+    () => RRC(4),
+    () => RRC(5),
+    () => RRC(6),
     RRCHL,
-    function () {
-      RRC(0);
-    },
-    function () {
-      RL(1);
-    },
-    function () {
-      RL(2);
-    },
-    function () {
-      RL(3);
-    },
-    function () {
-      RL(4);
-    },
-    function () {
-      RL(5);
-    },
-    function () {
-      RL(6);
-    },
+    () => RRC(0),
+    () => RL(1),
+    () => RL(2),
+    () => RL(3),
+    () => RL(4),
+    () => RL(5),
+    () => RL(6),
     RLHL,
-    function () {
-      RL(0);
-    },
-    function () {
-      RR(1);
-    },
-    function () {
-      RR(2);
-    },
-    function () {
-      RR(3);
-    },
-    function () {
-      RR(4);
-    },
-    function () {
-      RR(5);
-    },
-    function () {
-      RR(6);
-    },
+    () => RL(0),
+    () => RR(1),
+    () => RR(2),
+    () => RR(3),
+    () => RR(4),
+    () => RR(5),
+    () => RR(6),
     RRHL,
-    function () {
-      RR(0);
-    },
-    function () {
-      SLA(1);
-    },
-    function () {
-      SLA(2);
-    },
-    function () {
-      SLA(3);
-    },
-    function () {
-      SLA(4);
-    },
-    function () {
-      SLA(5);
-    },
-    function () {
-      SLA(6);
-    },
+    () => RR(0),
+    () => SLA(1),
+    () => SLA(2),
+    () => SLA(3),
+    () => SLA(4),
+    () => SLA(5),
+    () => SLA(6),
     SLAHL,
-    function () {
-      SLA(0);
-    },
-    function () {
-      SRA(1);
-    },
-    function () {
-      SRA(2);
-    },
-    function () {
-      SRA(3);
-    },
-    function () {
-      SRA(4);
-    },
-    function () {
-      SRA(5);
-    },
-    function () {
-      SRA(6);
-    },
+    () => SLA(0),
+    () => SRA(1),
+    () => SRA(2),
+    () => SRA(3),
+    () => SRA(4),
+    () => SRA(5),
+    () => SRA(6),
     SRAHL,
-    function () {
-      SRA(0);
-    },
-    function () {
-      SWAP(1);
-    },
-    function () {
-      SWAP(2);
-    },
-    function () {
-      SWAP(3);
-    },
-    function () {
-      SWAP(4);
-    },
-    function () {
-      SWAP(5);
-    },
-    function () {
-      SWAP(6);
-    },
+    () => SRA(0),
+    () => SWAP(1),
+    () => SWAP(2),
+    () => SWAP(3),
+    () => SWAP(4),
+    () => SWAP(5),
+    () => SWAP(6),
     SWAPHL,
-    function () {
-      SWAP(0);
-    },
-    function () {
-      SRL(1);
-    },
-    function () {
-      SRL(2);
-    },
-    function () {
-      SRL(3);
-    },
-    function () {
-      SRL(4);
-    },
-    function () {
-      SRL(5);
-    },
-    function () {
-      SRL(6);
-    },
+    () => SWAP(0),
+    () => SRL(1),
+    () => SRL(2),
+    () => SRL(3),
+    () => SRL(4),
+    () => SRL(5),
+    () => SRL(6),
     SRLHL,
-    function () {
-      SRL(0);
-    },
-    function () {
-      BIT(0, 1);
-    },
-    function () {
-      BIT(0, 2);
-    },
-    function () {
-      BIT(0, 3);
-    },
-    function () {
-      BIT(0, 4);
-    },
-    function () {
-      BIT(0, 5);
-    },
-    function () {
-      BIT(0, 6);
-    },
-    function () {
-      BITHL(0);
-    },
-    function () {
-      BIT(0, 0);
-    },
-    function () {
-      BIT(1, 1);
-    },
-    function () {
-      BIT(1, 2);
-    },
-    function () {
-      BIT(1, 3);
-    },
-    function () {
-      BIT(1, 4);
-    },
-    function () {
-      BIT(1, 5);
-    },
-    function () {
-      BIT(1, 6);
-    },
-    function () {
-      BITHL(1);
-    },
-    function () {
-      BIT(1, 0);
-    },
-    function () {
-      BIT(2, 1);
-    },
-    function () {
-      BIT(2, 2);
-    },
-    function () {
-      BIT(2, 3);
-    },
-    function () {
-      BIT(2, 4);
-    },
-    function () {
-      BIT(2, 5);
-    },
-    function () {
-      BIT(2, 6);
-    },
-    function () {
-      BITHL(2);
-    },
-    function () {
-      BIT(2, 0);
-    },
-    function () {
-      BIT(3, 1);
-    },
-    function () {
-      BIT(3, 2);
-    },
-    function () {
-      BIT(3, 3);
-    },
-    function () {
-      BIT(3, 4);
-    },
-    function () {
-      BIT(3, 5);
-    },
-    function () {
-      BIT(3, 6);
-    },
-    function () {
-      BITHL(3);
-    },
-    function () {
-      BIT(3, 0);
-    },
-    function () {
-      BIT(4, 1);
-    },
-    function () {
-      BIT(4, 2);
-    },
-    function () {
-      BIT(4, 3);
-    },
-    function () {
-      BIT(4, 4);
-    },
-    function () {
-      BIT(4, 5);
-    },
-    function () {
-      BIT(4, 6);
-    },
-    function () {
-      BITHL(4);
-    },
-    function () {
-      BIT(4, 0);
-    },
-    function () {
-      BIT(5, 1);
-    },
-    function () {
-      BIT(5, 2);
-    },
-    function () {
-      BIT(5, 3);
-    },
-    function () {
-      BIT(5, 4);
-    },
-    function () {
-      BIT(5, 5);
-    },
-    function () {
-      BIT(5, 6);
-    },
-    function () {
-      BITHL(5);
-    },
-    function () {
-      BIT(5, 0);
-    },
-    function () {
-      BIT(6, 1);
-    },
-    function () {
-      BIT(6, 2);
-    },
-    function () {
-      BIT(6, 3);
-    },
-    function () {
-      BIT(6, 4);
-    },
-    function () {
-      BIT(6, 5);
-    },
-    function () {
-      BIT(6, 6);
-    },
-    function () {
-      BITHL(6);
-    },
-    function () {
-      BIT(6, 0);
-    },
-    function () {
-      BIT(7, 1);
-    },
-    function () {
-      BIT(7, 2);
-    },
-    function () {
-      BIT(7, 3);
-    },
-    function () {
-      BIT(7, 4);
-    },
-    function () {
-      BIT(7, 5);
-    },
-    function () {
-      BIT(7, 6);
-    },
-    function () {
-      BITHL(7);
-    },
-    function () {
-      BIT(7, 0);
-    },
-    function () {
-      RES(0, 1);
-    },
-    function () {
-      RES(0, 2);
-    },
-    function () {
-      RES(0, 3);
-    },
-    function () {
-      RES(0, 4);
-    },
-    function () {
-      RES(0, 5);
-    },
-    function () {
-      RES(0, 6);
-    },
-    function () {
-      RESHL(0);
-    },
-    function () {
-      RES(0, 0);
-    },
-    function () {
-      RES(1, 1);
-    },
-    function () {
-      RES(1, 2);
-    },
-    function () {
-      RES(1, 3);
-    },
-    function () {
-      RES(1, 4);
-    },
-    function () {
-      RES(1, 5);
-    },
-    function () {
-      RES(1, 6);
-    },
-    function () {
-      RESHL(1);
-    },
-    function () {
-      RES(1, 0);
-    },
-    function () {
-      RES(2, 1);
-    },
-    function () {
-      RES(2, 2);
-    },
-    function () {
-      RES(2, 3);
-    },
-    function () {
-      RES(2, 4);
-    },
-    function () {
-      RES(2, 5);
-    },
-    function () {
-      RES(2, 6);
-    },
-    function () {
-      RESHL(2);
-    },
-    function () {
-      RES(2, 0);
-    },
-    function () {
-      RES(3, 1);
-    },
-    function () {
-      RES(3, 2);
-    },
-    function () {
-      RES(3, 3);
-    },
-    function () {
-      RES(3, 4);
-    },
-    function () {
-      RES(3, 5);
-    },
-    function () {
-      RES(3, 6);
-    },
-    function () {
-      RESHL(3);
-    },
-    function () {
-      RES(3, 0);
-    },
-    function () {
-      RES(4, 1);
-    },
-    function () {
-      RES(4, 2);
-    },
-    function () {
-      RES(4, 3);
-    },
-    function () {
-      RES(4, 4);
-    },
-    function () {
-      RES(4, 5);
-    },
-    function () {
-      RES(4, 6);
-    },
-    function () {
-      RESHL(4);
-    },
-    function () {
-      RES(4, 0);
-    },
-    function () {
-      RES(5, 1);
-    },
-    function () {
-      RES(5, 2);
-    },
-    function () {
-      RES(5, 3);
-    },
-    function () {
-      RES(5, 4);
-    },
-    function () {
-      RES(5, 5);
-    },
-    function () {
-      RES(5, 6);
-    },
-    function () {
-      RESHL(5);
-    },
-    function () {
-      RES(5, 0);
-    },
-    function () {
-      RES(6, 1);
-    },
-    function () {
-      RES(6, 2);
-    },
-    function () {
-      RES(6, 3);
-    },
-    function () {
-      RES(6, 4);
-    },
-    function () {
-      RES(6, 5);
-    },
-    function () {
-      RES(6, 6);
-    },
-    function () {
-      RESHL(6);
-    },
-    function () {
-      RES(6, 0);
-    },
-    function () {
-      RES(7, 1);
-    },
-    function () {
-      RES(7, 2);
-    },
-    function () {
-      RES(7, 3);
-    },
-    function () {
-      RES(7, 4);
-    },
-    function () {
-      RES(7, 5);
-    },
-    function () {
-      RES(7, 6);
-    },
-    function () {
-      RESHL(7);
-    },
-    function () {
-      RES(7, 0);
-    },
-    function () {
-      SET(0, 1);
-    },
-    function () {
-      SET(0, 2);
-    },
-    function () {
-      SET(0, 3);
-    },
-    function () {
-      SET(0, 4);
-    },
-    function () {
-      SET(0, 5);
-    },
-    function () {
-      SET(0, 6);
-    },
-    function () {
-      SETHL(0);
-    },
-    function () {
-      SET(0, 0);
-    },
-    function () {
-      SET(1, 1);
-    },
-    function () {
-      SET(1, 2);
-    },
-    function () {
-      SET(1, 3);
-    },
-    function () {
-      SET(1, 4);
-    },
-    function () {
-      SET(1, 5);
-    },
-    function () {
-      SET(1, 6);
-    },
-    function () {
-      SETHL(1);
-    },
-    function () {
-      SET(1, 0);
-    },
-    function () {
-      SET(2, 1);
-    },
-    function () {
-      SET(2, 2);
-    },
-    function () {
-      SET(2, 3);
-    },
-    function () {
-      SET(2, 4);
-    },
-    function () {
-      SET(2, 5);
-    },
-    function () {
-      SET(2, 6);
-    },
-    function () {
-      SETHL(2);
-    },
-    function () {
-      SET(2, 0);
-    },
-    function () {
-      SET(3, 1);
-    },
-    function () {
-      SET(3, 2);
-    },
-    function () {
-      SET(3, 3);
-    },
-    function () {
-      SET(3, 4);
-    },
-    function () {
-      SET(3, 5);
-    },
-    function () {
-      SET(3, 6);
-    },
-    function () {
-      SETHL(3);
-    },
-    function () {
-      SET(3, 0);
-    },
-    function () {
-      SET(4, 1);
-    },
-    function () {
-      SET(4, 2);
-    },
-    function () {
-      SET(4, 3);
-    },
-    function () {
-      SET(4, 4);
-    },
-    function () {
-      SET(4, 5);
-    },
-    function () {
-      SET(4, 6);
-    },
-    function () {
-      SETHL(4);
-    },
-    function () {
-      SET(4, 0);
-    },
-    function () {
-      SET(5, 1);
-    },
-    function () {
-      SET(5, 2);
-    },
-    function () {
-      SET(5, 3);
-    },
-    function () {
-      SET(5, 4);
-    },
-    function () {
-      SET(5, 5);
-    },
-    function () {
-      SET(5, 6);
-    },
-    function () {
-      SETHL(5);
-    },
-    function () {
-      SET(5, 0);
-    },
-    function () {
-      SET(6, 1);
-    },
-    function () {
-      SET(6, 2);
-    },
-    function () {
-      SET(6, 3);
-    },
-    function () {
-      SET(6, 4);
-    },
-    function () {
-      SET(6, 5);
-    },
-    function () {
-      SET(6, 6);
-    },
-    function () {
-      SETHL(6);
-    },
-    function () {
-      SET(6, 0);
-    },
-    function () {
-      SET(7, 1);
-    },
-    function () {
-      SET(7, 2);
-    },
-    function () {
-      SET(7, 3);
-    },
-    function () {
-      SET(7, 4);
-    },
-    function () {
-      SET(7, 5);
-    },
-    function () {
-      SET(7, 6);
-    },
-    function () {
-      SETHL(7);
-    },
-    function () {
-      SET(7, 0);
-    },
+    () => SRL(0),
+    () => BIT(0, 1),
+    () => BIT(0, 2),
+    () => BIT(0, 3),
+    () => BIT(0, 4),
+    () => BIT(0, 5),
+    () => BIT(0, 6),
+    () => BITHL(0),
+    () => BIT(0, 0),
+    () => BIT(1, 1),
+    () => BIT(1, 2),
+    () => BIT(1, 3),
+    () => BIT(1, 4),
+    () => BIT(1, 5),
+    () => BIT(1, 6),
+    () => BITHL(1),
+    () => BIT(1, 0),
+    () => BIT(2, 1),
+    () => BIT(2, 2),
+    () => BIT(2, 3),
+    () => BIT(2, 4),
+    () => BIT(2, 5),
+    () => BIT(2, 6),
+    () => BITHL(2),
+    () => BIT(2, 0),
+    () => BIT(3, 1),
+    () => BIT(3, 2),
+    () => BIT(3, 3),
+    () => BIT(3, 4),
+    () => BIT(3, 5),
+    () => BIT(3, 6),
+    () => BITHL(3),
+    () => BIT(3, 0),
+    () => BIT(4, 1),
+    () => BIT(4, 2),
+    () => BIT(4, 3),
+    () => BIT(4, 4),
+    () => BIT(4, 5),
+    () => BIT(4, 6),
+    () => BITHL(4),
+    () => BIT(4, 0),
+    () => BIT(5, 1),
+    () => BIT(5, 2),
+    () => BIT(5, 3),
+    () => BIT(5, 4),
+    () => BIT(5, 5),
+    () => BIT(5, 6),
+    () => BITHL(5),
+    () => BIT(5, 0),
+    () => BIT(6, 1),
+    () => BIT(6, 2),
+    () => BIT(6, 3),
+    () => BIT(6, 4),
+    () => BIT(6, 5),
+    () => BIT(6, 6),
+    () => BITHL(6),
+    () => BIT(6, 0),
+    () => BIT(7, 1),
+    () => BIT(7, 2),
+    () => BIT(7, 3),
+    () => BIT(7, 4),
+    () => BIT(7, 5),
+    () => BIT(7, 6),
+    () => BITHL(7),
+    () => BIT(7, 0),
+    () => RES(0, 1),
+    () => RES(0, 2),
+    () => RES(0, 3),
+    () => RES(0, 4),
+    () => RES(0, 5),
+    () => RES(0, 6),
+    () => RESHL(0),
+    () => RES(0, 0),
+    () => RES(1, 1),
+    () => RES(1, 2),
+    () => RES(1, 3),
+    () => RES(1, 4),
+    () => RES(1, 5),
+    () => RES(1, 6),
+    () => RESHL(1),
+    () => RES(1, 0),
+    () => RES(2, 1),
+    () => RES(2, 2),
+    () => RES(2, 3),
+    () => RES(2, 4),
+    () => RES(2, 5),
+    () => RES(2, 6),
+    () => RESHL(2),
+    () => RES(2, 0),
+    () => RES(3, 1),
+    () => RES(3, 2),
+    () => RES(3, 3),
+    () => RES(3, 4),
+    () => RES(3, 5),
+    () => RES(3, 6),
+    () => RESHL(3),
+    () => RES(3, 0),
+    () => RES(4, 1),
+    () => RES(4, 2),
+    () => RES(4, 3),
+    () => RES(4, 4),
+    () => RES(4, 5),
+    () => RES(4, 6),
+    () => RESHL(4),
+    () => RES(4, 0),
+    () => RES(5, 1),
+    () => RES(5, 2),
+    () => RES(5, 3),
+    () => RES(5, 4),
+    () => RES(5, 5),
+    () => RES(5, 6),
+    () => RESHL(5),
+    () => RES(5, 0),
+    () => RES(6, 1),
+    () => RES(6, 2),
+    () => RES(6, 3),
+    () => RES(6, 4),
+    () => RES(6, 5),
+    () => RES(6, 6),
+    () => RESHL(6),
+    () => RES(6, 0),
+    () => RES(7, 1),
+    () => RES(7, 2),
+    () => RES(7, 3),
+    () => RES(7, 4),
+    () => RES(7, 5),
+    () => RES(7, 6),
+    () => RESHL(7),
+    () => RES(7, 0),
+    () => SET(0, 1),
+    () => SET(0, 2),
+    () => SET(0, 3),
+    () => SET(0, 4),
+    () => SET(0, 5),
+    () => SET(0, 6),
+    () => SETHL(0),
+    () => SET(0, 0),
+    () => SET(1, 1),
+    () => SET(1, 2),
+    () => SET(1, 3),
+    () => SET(1, 4),
+    () => SET(1, 5),
+    () => SET(1, 6),
+    () => SETHL(1),
+    () => SET(1, 0),
+    () => SET(2, 1),
+    () => SET(2, 2),
+    () => SET(2, 3),
+    () => SET(2, 4),
+    () => SET(2, 5),
+    () => SET(2, 6),
+    () => SETHL(2),
+    () => SET(2, 0),
+    () => SET(3, 1),
+    () => SET(3, 2),
+    () => SET(3, 3),
+    () => SET(3, 4),
+    () => SET(3, 5),
+    () => SET(3, 6),
+    () => SETHL(3),
+    () => SET(3, 0),
+    () => SET(4, 1),
+    () => SET(4, 2),
+    () => SET(4, 3),
+    () => SET(4, 4),
+    () => SET(4, 5),
+    () => SET(4, 6),
+    () => SETHL(4),
+    () => SET(4, 0),
+    () => SET(5, 1),
+    () => SET(5, 2),
+    () => SET(5, 3),
+    () => SET(5, 4),
+    () => SET(5, 5),
+    () => SET(5, 6),
+    () => SETHL(5),
+    () => SET(5, 0),
+    () => SET(6, 1),
+    () => SET(6, 2),
+    () => SET(6, 3),
+    () => SET(6, 4),
+    () => SET(6, 5),
+    () => SET(6, 6),
+    () => SETHL(6),
+    () => SET(6, 0),
+    () => SET(7, 1),
+    () => SET(7, 2),
+    () => SET(7, 3),
+    () => SET(7, 4),
+    () => SET(7, 5),
+    () => SET(7, 6),
+    () => SETHL(7),
+    () => SET(7, 0),
   ];
 
   // ----- State Load/Save -----
